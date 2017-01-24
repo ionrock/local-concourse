@@ -1,10 +1,13 @@
 ---
 version: '2'
 
-
 services:
   concourse-db:
     image: postgres:9.5
+
+    # ports:
+    #   - "5432:5432"
+
     environment:
       POSTGRES_DB: concourse
       POSTGRES_USER: concourse
@@ -12,14 +15,17 @@ services:
       PGDATA: /database
 
   concourse-web:
-    image: concourse/concourse
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+
     links:
       - concourse-db
     command: web
     ports:
       - "8080:8080"
-    volumes:
-      - "./keys/web:/concourse-keys"
+    # volumes:
+    #   - "./keys/web:/concourse-keys"
     environment:
       CONCOURSE_BASIC_AUTH_USERNAME: concourse
       CONCOURSE_BASIC_AUTH_PASSWORD: changeme
@@ -28,12 +34,16 @@ services:
         postgres://concourse:changeme@concourse-db:5432/concourse?sslmode=disable
 
   concourse-worker:
-    image: concourse/concourse
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+
+    # image: concourse/concourse
     privileged: true
     links:
       - concourse-web
     command: worker
-    volumes:
-      - "./keys/worker:/concourse-keys"
+    # volumes:
+    #   - "./keys/worker:/concourse-keys"
     environment:
       CONCOURSE_TSA_HOST: concourse-web
