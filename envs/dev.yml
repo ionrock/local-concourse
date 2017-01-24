@@ -1,0 +1,12 @@
+---
+- DIGITALOCEAN_SIZE: 1GB
+
+- DOCKER_MACHINE_IP_ADDR: "`docker-machine ip concourse`"
+
+- DOCKER:
+  - TLS_VERIFY: "1"
+  - HOST: "tcp://${DOCKER_MACHINE_IP_ADDR}:2376"
+  - CERT_PATH: "/Users/ericlarson/.docker/machine/machines/concourse"
+  - MACHINE_NAME: "concourse"
+
+- CONCOURSE_EXTERNAL_URL: "http://${DOCKER_MACHINE_IP_ADDR}"
